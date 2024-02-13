@@ -35,6 +35,10 @@ const links = [
     link: "Schedule",
     icon: h("i", { class: "fi fi-rr-calendar-lines" }),
   },
+  // {
+  //   name: "Login",
+  //   link: "Login",
+  // },
 ];
 </script>
 

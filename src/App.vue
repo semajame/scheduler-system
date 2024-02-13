@@ -4,9 +4,9 @@
       <SideNav />
     </div>
     <div class="col-10 p-0 bg-white">
-      <div class="row bg-primary m-0 p-0">
+      <!-- <div class="row bg-primary m-0 p-0">
         <Header />
-      </div>
+      </div> -->
       <RouterView />
     </div>
   </div>

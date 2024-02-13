@@ -1,75 +1,116 @@
 <template>
   <JqxScheduler
     ref="myScheduler"
-    :width="getWidth"
+    :width="'100%'"
+    :height="'100%'"
     :source="dataAdapter"
     :date="date"
-    :showLegend="true"
     :view="'weekView'"
     :appointmentDataFields="appointmentDataFields"
-    :resources="resources"
     :views="views"
-    class="scheduler"
+    @appointmentAdd="handleAppointmentAdd"
+    @appointmentDelete="handleAppointmentDelete"
   />
 </template>
-<script>
-// import JqxScheduler from "jqwidgets-scripts/jqwidgets-vue/vue_jqxscheduler.vue";
 
-import JqxScheduler from "jqwidgets-framework/jqwidgets-vue3/vue_jqxscheduler.vue";
+<script>
+import JqxScheduler from "jqwidgets-scripts/jqwidgets-vue3/vue_jqxscheduler.vue";
+import axios from "axios";
 
 export default {
   components: {
     JqxScheduler,
   },
-  data: function () {
+  data() {
     return {
-      getWidth: getWidth("scheduler"),
-
       date: new jqx.date(),
       appointmentDataFields: {
         from: "start",
         to: "end",
-        id: "id",
         description: "description",
         location: "location",
+        recurrencePattern: "recurrencePattern",
+        draggable: "draggable",
         subject: "subject",
-        resourceId: "calendar",
+        id: "id",
       },
-      resources: {
-        colorScheme: "scheme05",
-        dataField: "calendar",
-        source: new jqx.dataAdapter(this.source),
-      },
-      views: ["dayView", "weekView", "monthView"],
-    };
-  },
-  beforeCreate: function () {
-    const generateAppointments = function () {};
-    this.source = {
-      dataType: "array",
-      dataFields: [
-        { name: "id", type: "string" },
-        { name: "description", type: "string" },
-        { name: "location", type: "string" },
-        { name: "subject", type: "string" },
-        { name: "calendar", type: "string" },
-        { name: "start", type: "date" },
-        { name: "end", type: "date" },
+      views: [
+        "dayView",
+        {
+          type: "weekView",
+          allDayRowHeight: 10, // Set your desired height
+        },
+        "monthView",
       ],
-      id: "id",
-      localData: generateAppointments(),
     };
-    this.dataAdapter = new jqx.dataAdapter(this.source);
   },
-  mounted: function () {
-    this.$refs.myScheduler.ensureAppointmentVisible("id1");
+  computed: {
+    dataAdapter() {
+      return new jqx.dataAdapter(this.source);
+    },
+    source() {
+      return {
+        dataType: "json",
+        dataFields: [
+          { name: "subject", type: "string" },
+          { name: "location", type: "string" },
+          { name: "description", type: "string" },
+          { name: "from", type: "date" },
+          { name: "to", type: "date" },
+          { name: "id", type: "string" },
+        ],
+        localData: [],
+      };
+    },
+  },
+  mounted() {
+    // Fetch data from the server when the component is mounted
+    this.loadDataFromServer();
+  },
+
+  methods: {
+    handleAppointmentAdd(event) {
+      // Use this method if you want to perform an action when an appointment is added
+      const appointment = event.args.appointment;
+      this.saveEventToMongoDB(appointment);
+    },
+
+    saveEventToMongoDB(eventData) {
+      axios
+        .post("http://localhost:5174/", eventData)
+        .then((response) => {
+          console.log(response.data);
+          this.loadDataFromServer();
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
+    loadDataFromServer() {
+      axios
+        .get("http://localhost:5174/")
+        .then((response) => {
+          this.source.localData = response.data;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
+    handleAppointmentDelete(event) {
+      // Assuming you have an event ID, you can delete it on the server
+      const eventId = event.args.appointment.id;
+      axios
+        .delete(`http://localhost:5174/${eventId}`)
+        .then(() => {
+          console.log("Event deleted successfully");
+          this.loadDataFromServer();
+        })
+        .catch((error) => {
+          console.error("Error deleting event:", error);
+        });
+    },
   },
 };
 </script>
-
-<style scoped>
-/* .scheduler {
-  width: 99% !important;
-  height: 100% !important;
-} */
-</style>
