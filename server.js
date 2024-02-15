@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const router = require("./routes/schedRoutes");
 
 const app = express();
 
@@ -18,3 +19,5 @@ mongoose
     });
   })
   .catch((err) => console.log(err));
+
+app.use("/", router);

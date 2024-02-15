@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const schedController = require("/controller/schedController");
+const schedController = require("../controller/schedController");
 
 // get sched
 router.get("/", schedController.sched_get);

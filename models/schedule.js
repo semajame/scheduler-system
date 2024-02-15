@@ -5,9 +5,8 @@ const eventSchema = new mongoose.Schema({
   subject: String,
   location: String,
   description: String,
-  id: String,
-  // from: Date,
-  // to: Date,
+  // start: Date,
+  // end: Date,
 });
 
 const Event = mongoose.model("Event", eventSchema);

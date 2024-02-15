@@ -1,4 +1,4 @@
-const SchedSchema = require("./models/schedule");
+const SchedSchema = require("../models/schedule");
 
 const sched_post = (req, res) => {
   const event = new SchedSchema(req.body);
@@ -27,7 +27,7 @@ const sched_get = (req, res) => {
 };
 
 const sched_delete = (req, res) => {
-  const id = SchedSchema.id;
+  const id = req.params.id;
   SchedSchema.findByIdAndDelete(id)
     .then((result) => {
       console.log(result);

@@ -29,10 +29,7 @@ export default {
         to: "end",
         description: "description",
         location: "location",
-        recurrencePattern: "recurrencePattern",
-        draggable: "draggable",
         subject: "subject",
-        id: "id",
       },
       views: [
         "dayView",
@@ -55,14 +52,14 @@ export default {
           { name: "subject", type: "string" },
           { name: "location", type: "string" },
           { name: "description", type: "string" },
-          { name: "from", type: "date" },
-          { name: "to", type: "date" },
-          { name: "id", type: "string" },
+          { name: "start", type: "date" },
+          { name: "end", type: "date" },
         ],
-        localData: [],
+        schedulerData: [],
       };
     },
   },
+
   mounted() {
     // Fetch data from the server when the component is mounted
     this.loadDataFromServer();
@@ -79,7 +76,6 @@ export default {
       axios
         .post("http://localhost:5174/", eventData)
         .then((response) => {
-          console.log(response.data);
           this.loadDataFromServer();
         })
         .catch((error) => {
@@ -91,7 +87,7 @@ export default {
       axios
         .get("http://localhost:5174/")
         .then((response) => {
-          this.source.localData = response.data;
+          this.schedulerData = response.data;
         })
         .catch((error) => {
           console.error(error);
@@ -100,11 +96,11 @@ export default {
 
     handleAppointmentDelete(event) {
       // Assuming you have an event ID, you can delete it on the server
-      const eventId = event.args.appointment.id;
+      const eventId = event.args.appointment._id;
       axios
         .delete(`http://localhost:5174/${eventId}`)
-        .then(() => {
-          console.log("Event deleted successfully");
+        .then((result) => {
+          console.log(result);
           this.loadDataFromServer();
         })
         .catch((error) => {
